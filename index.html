@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMKEU BENDAHARA DESA PULIAS 3D</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+        
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Dynamic 3D & Modern UI Elements */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: rgba(52, 211, 153, 0.3);
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.15);
+        }
+
+        .glow-emerald {
+            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3);
+        }
+
+        .glow-blue {
+            box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.3);
+        }
+
+        .mesh-bg {
+            background-color: #030712;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(51, 65, 85, 0.8);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(16, 185, 129, 0.5);
+        }
+
+        /* CSS KHUSUS CETAK (LEGAL PORTRAIT 8.5 x 14 in & FONT 11PT RESMI) */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { 
+                background-color: white !important; 
+                color: black !important; 
+                font-size: 11pt !important;
+                font-family: Arial, sans-serif !important;
+            }
+            @page { size: 8.5in 14in; margin: 0.8in; }
+            table { width: 100% !important; border-collapse: collapse !important; margin-top: 10px; }
+            th, td { border: 1px solid #000 !important; padding: 5px 6px !important; font-size: 11pt !important; color: black !important; }
+            th { background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; text-transform: uppercase; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="mesh-bg h-full text-slate-100 flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+    <!-- TOP NAV (NO PRINT) -->
+    <header class="no-print glass-panel sticky top-0 z-50 border-b border-slate-800/80 shadow-2xl">
+        <div class="px-4 py-3 md:px-6 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <button id="sidebarToggle" class="p-2 rounded-xl bg-slate-800/80 hover:bg-emerald-600/30 text-emerald-400 border border-slate-700/60 transition md:hidden">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <div class="flex items-center space-x-3 cursor-pointer group" onclick="switchTab('beranda')">
+                    <div class="p-2.5 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition transform">
+                        <i data-lucide="landmark" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-base md:text-lg leading-tight tracking-wide bg-gradient-to-r from-white via-slate-100 to-emerald-300 bg-clip-text text-transparent">SIMKEU BENDAHARA DESA PULIAS</h1>
+                        <p class="text-[11px] font-medium text-emerald-400/90 tracking-wider">Kec. Ogodeide, Kab. Toli-Toli • 2026</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="text-right hidden sm:block bg-slate-900/60 border border-slate-800/80 px-3 py-1.5 rounded-xl">
+                    <p class="font-bold text-xs text-slate-200" id="currentDateStr">08 November 2026</p>
+                    <p class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">Bendahara: ARMAWATI</p>
+                </div>
+                <button onclick="resetDataDefault()" class="bg-rose-500/10 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 font-semibold transition text-xs shadow-lg shadow-rose-950/40">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> <span>Reset Data</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden">
+        <!-- SIDEBAR NAVIGATION (NO PRINT) -->
+        <aside id="sidebar" class="no-print glass-panel w-72 flex-shrink-0 flex flex-col justify-between transition-all duration-300 absolute md:relative z-40 h-[calc(100vh-65px)] md:h-auto overflow-y-auto -translate-x-full md:translate-x-0 border-r border-slate-800/80">
+            <div class="p-4 space-y-5">
+                <!-- MENU UTAMA -->
+                <nav class="space-y-1">
+                    <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn w-full flex items-center px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800/60">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4 mr-3 text-emerald-400"></i> BERANDA UTAMA
+                    </button>
+                </nav>
+
+                <!-- 1. KELOMPOK SILTAP & TUNJANGAN -->
+                <div class="space-y-1">
+                    <div class="px-3 py-2 text-[11px] font-bold text-emerald-400 uppercase tracking-widest flex items-center justify-between cursor-pointer rounded-xl bg-slate-900/50 border border-slate-800/60 hover:border-emerald-500/30 transition" onclick="toggleSubMenu('menu-siltap')">
+                        <span class="flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i> 1. SILTAP & TUNJANGAN</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+                    </div>
+                    <div id="menu-siltap" class="space-y-1 pl-2 pt-1">
+                        <button onclick="switchTab('siltap_kades')" id="nav-siltap_kades" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">1. Siltap Kades</button>
+                        <button onclick="switchTab('siltap_aparat')" id="nav-siltap_aparat" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">2. Siltap Aparat (1-13)</button>
+                        <button onclick="switchTab('tunj_kades')" id="nav-tunj_kades" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">3. Tunjangan Kades</button>
+                        <button onclick="switchTab('tunj_aparat')" id="nav-tunj_aparat" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">4. Tunjangan Aparat (1-13)</button>
+                        <button onclick="switchTab('tunj_bpd')" id="nav-tunj_bpd" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">5. Tunjangan BPD (1-7)</button>
+                        <button onclick="switchTab('insentif_rt')" id="nav-insentif_rt" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">6. Insentif RT (1-10)</button>
+                        <button onclick="switchTab('rekap_siltap')" id="nav-rekap_siltap" class="nav-btn w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 hover:bg-emerald-900/40 block mt-2 transition">
+                            📊 Rekap Dana Siltap & Tunj.
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. KELOMPOK HONORARIUM -->
+                <div class="space-y-1">
+                    <div class="px-3 py-2 text-[11px] font-bold text-sky-400 uppercase tracking-widest flex items-center justify-between cursor-pointer rounded-xl bg-slate-900/50 border border-slate-800/60 hover:border-sky-500/30 transition" onclick="toggleSubMenu('menu-honor')">
+                        <span class="flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-sky-400"></i> 2. HONORARIUM</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+                    </div>
+                    <div id="menu-honor" class="space-y-1 pl-2 pt-1">
+                        <div class="max-h-56 overflow-y-auto pr-1 space-y-1">
+                            <button onclick="switchTab('hon_ppkd')" id="nav-hon_ppkd" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">1. PPKD (1-6)</button>
+                            <button onclick="switchTab('hon_staf')" id="nav-hon_staf" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">2. STAF Desa (1-2)</button>
+                            <button onclick="switchTab('hon_operator')" id="nav-hon_operator" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">3. Operator (1-4)</button>
+                            <button onclick="switchTab('hon_karang_taruna')" id="nav-hon_karang_taruna" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">4. Karang Taruna (1-6)</button>
+                            <button onclick="switchTab('hon_posyandu')" id="nav-hon_posyandu" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">5. Posyandu (1-16)</button>
+                            <button onclick="switchTab('hon_posbindu')" id="nav-hon_posbindu" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">6. Posbindu (1-6)</button>
+                            <button onclick="switchTab('hon_lpmd')" id="nav-hon_lpmd" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">7. LPMD (1-6)</button>
+                            <button onclick="switchTab('hon_linmas')" id="nav-hon_linmas" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">8. LINMAS (1-16)</button>
+                            <button onclick="switchTab('hon_mesjid')" id="nav-hon_mesjid" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">9. Pengurus Mesjid (1-19)</button>
+                            <button onclick="switchTab('hon_mengaji')" id="nav-hon_mengaji" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">10. Guru Mengaji (1-8)</button>
+                            <button onclick="switchTab('hon_paud')" id="nav-hon_paud" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">11. PAUD (1-6)</button>
+                            <button onclick="switchTab('hon_tpps')" id="nav-hon_tpps" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">12. TPPS (1-6)</button>
+                            <button onclick="switchTab('hon_kpm')" id="nav-hon_kpm" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">13. KPM (1-2)</button>
+                            <button onclick="switchTab('hon_gereja')" id="nav-hon_gereja" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">14. Gereja (1-5)</button>
+                            <button onclick="switchTab('hon_jenazah')" id="nav-hon_jenazah" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">15. Pengurus Jenazah (1-4)</button>
+                            <button onclick="switchTab('hon_blt')" id="nav-hon_blt" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">16. BLT Desa (1-24)</button>
+                            <button onclick="switchTab('hon_pkk')" id="nav-hon_pkk" class="nav-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">17. PKK (1-8)</button>
+                        </div>
+                        <button onclick="switchTab('rekap_honor')" id="nav-rekap_honor" class="nav-btn w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold text-sky-400 bg-sky-950/40 border border-sky-500/30 hover:bg-sky-900/40 block mt-2 transition">
+                            📊 Rekap Dana Honorarium
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: DOKUMEN MANUAL -->
+                <div class="space-y-1">
+                    <div class="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        DOKUMEN MANUAL
+                    </div>
+                    <div class="space-y-1 pl-2">
+                        <button onclick="switchTab('kuitansi')" id="nav-kuitansi" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">🧾 Kuitansi Manual</button>
+                        <button onclick="switchTab('nota')" id="nav-nota" class="nav-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 block transition">📝 Nota Manual</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER INFO SIDEBAR -->
+            <div class="p-4 bg-slate-950/90 text-slate-400 text-xs border-t border-slate-800/80">
+                <p class="font-bold text-slate-300">Pemdes Pulias 2026</p>
+                <p class="text-[11px] text-slate-400">Toli-Toli, Sulawesi Tengah</p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT CONTAINER (NO PRINT) -->
+        <main class="no-print flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+            
+            <!-- DASHBOARD BERANDA -->
+            <div id="tab-beranda" class="tab-content space-y-6">
+                <!-- HERO BANNER 3D -->
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900/80 via-teal-900/60 to-slate-900 p-6 md:p-8 border border-emerald-500/30 shadow-2xl glow-emerald">
+                    <div class="relative z-10 space-y-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Sistem Manajemen Keuangan Aktif
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-wide">Selamat Datang di SIMKEU DESA PULIAS</h2>
+                        <p class="text-slate-300 text-xs md:text-sm max-w-2xl leading-relaxed">
+                            Aplikasi pengelolaan Penghasilan Tetap (SILTAP), Tunjangan, Honorarium Kelembagaan, serta pembuatan Kuitansi & Nota Keuangan resmi Desa Pulias.
+                        </p>
+                    </div>
+                    <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                        <i data-lucide="building-2" class="w-80 h-80 text-white"></i>
+                    </div>
+                </div>
+
+                <!-- STATS CARDS OVERVIEW -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="glass-card p-5 rounded-2xl flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Grup Siltap & Tunjangan</p>
+                            <h3 class="text-2xl font-black text-emerald-400">6 Kelompok</h3>
+                            <p class="text-[11px] text-slate-400">Kades, Aparat, BPD, RT</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                            <i data-lucide="wallet" class="w-7 h-7"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Grup Honorarium</p>
+                            <h3 class="text-2xl font-black text-sky-400">17 Kelompok</h3>
+                            <p class="text-[11px] text-slate-400">Lembaga & Pos Kegiatan</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                            <i data-lucide="users" class="w-7 h-7"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Potongan Pajak PPh 21</p>
+                            <h3 class="text-2xl font-black text-amber-400">5 %</h3>
+                            <p class="text-[11px] text-slate-400">Otomatis Terkalkulasi</p>
+                        </div>
+                        <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                            <i data-lucide="receipt" class="w-7 h-7"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARDS REKAP KELOMPOK DANA UTAMA -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- SILTAP & TUNJANGAN SUMMARY CARD -->
+                    <div class="glass-card p-6 rounded-2xl space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h3 class="font-bold text-emerald-400 text-sm uppercase tracking-wider flex items-center gap-2">
+                                <i data-lucide="wallet" class="w-5 h-5 text-emerald-400"></i> SILTAP & TUNJANGAN
+                            </h3>
+                            <button onclick="switchTab('rekap_siltap')" class="text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition">
+                                <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i> Rekap Dana
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-400">Kelola daftar penerimaan Penghasilan Tetap dan Tunjangan Aparatur serta BPD Pulias.</p>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button onclick="switchTab('siltap_kades')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-emerald-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Siltap Kades</p>
+                                <p class="text-[10px] text-slate-400">1 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('siltap_aparat')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-emerald-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Siltap Aparat</p>
+                                <p class="text-[10px] text-slate-400">13 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('tunj_kades')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-emerald-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Tunjangan Kades</p>
+                                <p class="text-[10px] text-slate-400">1 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('tunj_aparat')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-emerald-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Tunjangan Aparat</p>
+                                <p class="text-[10px] text-slate-400">13 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('tunj_bpd')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-emerald-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Tunjangan BPD</p>
+                                <p class="text-[10px] text-slate-400">7 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('insentif_rt')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-emerald-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Insentif RT</p>
+                                <p class="text-[10px] text-slate-400">10 Penerima</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- HONORARIUM SUMMARY CARD -->
+                    <div class="glass-card p-6 rounded-2xl space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h3 class="font-bold text-sky-400 text-sm uppercase tracking-wider flex items-center gap-2">
+                                <i data-lucide="users" class="w-5 h-5 text-sky-400"></i> HONORARIUM KEGIATAN
+                            </h3>
+                            <button onclick="switchTab('rekap_honor')" class="text-xs bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition">
+                                <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i> Rekap Dana
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-400">Kelola 17 sub-kategori honorarium kegiatan kelembagaan dan keder desa.</p>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button onclick="switchTab('hon_ppkd')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-sky-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Honor PPKD</p>
+                                <p class="text-[10px] text-slate-400">6 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('hon_posyandu')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-sky-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Honor Posyandu</p>
+                                <p class="text-[10px] text-slate-400">16 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('hon_linmas')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-sky-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Honor LINMAS</p>
+                                <p class="text-[10px] text-slate-400">16 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('hon_mesjid')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-sky-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Pengurus Mesjid</p>
+                                <p class="text-[10px] text-slate-400">19 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('hon_blt')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-sky-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">BLT Desa</p>
+                                <p class="text-[10px] text-slate-400">24 Penerima</p>
+                            </button>
+                            <button onclick="switchTab('hon_pkk')" class="p-3 text-left bg-slate-900/60 border border-slate-800 rounded-xl hover:border-sky-500/40 hover:bg-slate-800/50 transition">
+                                <p class="font-bold text-xs text-slate-200">Honor PKK</p>
+                                <p class="text-[10px] text-slate-400">8 Penerima</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB REKAP DANA 1: REKAP SILTAP & TUNJANGAN -->
+            <div id="tab-rekap_siltap" class="tab-content hidden space-y-6">
+                <div class="flex justify-start">
+                    <button onclick="switchTab('beranda')" class="bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-lg">
+                        <i data-lucide="arrow-left" class="w-4 h-4 text-emerald-400"></i> Kembali ke Beranda
+                    </button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-emerald-400 mb-1">📊 REKAPITULASI DANA SILTAP & TUNJANGAN</h2>
+                        <p class="text-xs text-slate-400">Ringkasan alokasi dana kotor, potongan BPJS/Pajak, dan penerimaan bersih untuk Siltap & Tunjangan.</p>
+                    </div>
+                    <button onclick="triggerPrintRekapSiltap()" class="bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-lg glow-blue self-start md:self-auto">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Cetak Legal (Portrait)
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-emerald-500">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Anggaran Kotor</p>
+                        <h3 class="text-2xl font-black text-white mt-1" id="siltap-sum-kotor">Rp 0</h3>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-rose-500">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Potongan (BPJS / PPh 21)</p>
+                        <h3 class="text-2xl font-black text-rose-400 mt-1" id="siltap-sum-pot">Rp 0</h3>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-teal-400">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Diterima Bersih</p>
+                        <h3 class="text-2xl font-black text-emerald-400 mt-1" id="siltap-sum-bersih">Rp 0</h3>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900/90 text-slate-300 font-bold uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3.5 text-center w-12">No</th>
+                                    <th class="p-3.5">Kategori Siltap & Tunjangan</th>
+                                    <th class="p-3.5 text-center">Penerima</th>
+                                    <th class="p-3.5 text-right">Total Kotor (Rp)</th>
+                                    <th class="p-3.5 text-right">Potongan (Rp)</th>
+                                    <th class="p-3.5 text-right">Total Bersih (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="siltap-summary-tbody" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+                            <tfoot id="siltap-summary-tfoot" class="bg-slate-900/90 font-bold text-slate-200 border-t border-slate-800"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB REKAP DANA 2: REKAP HONORARIUM -->
+            <div id="tab-rekap_honor" class="tab-content hidden space-y-6">
+                <div class="flex justify-start">
+                    <button onclick="switchTab('beranda')" class="bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-lg">
+                        <i data-lucide="arrow-left" class="w-4 h-4 text-sky-400"></i> Kembali ke Beranda
+                    </button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-sky-400 mb-1">📊 REKAPITULASI DANA HONORARIUM</h2>
+                        <p class="text-xs text-slate-400">Ringkasan kotor, PPh 21 (5%), dan penerimaan bersih 17 kelompok Honorarium Kegiatan.</p>
+                    </div>
+                    <button onclick="triggerPrintRekapHonor()" class="bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-lg glow-blue self-start md:self-auto">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Cetak Legal (Portrait)
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-sky-500">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Anggaran Kotor Honor</p>
+                        <h3 class="text-2xl font-black text-white mt-1" id="honor-sum-kotor">Rp 0</h3>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-rose-500">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total PPh 21 (5%)</p>
+                        <h3 class="text-2xl font-black text-rose-400 mt-1" id="honor-sum-pot">Rp 0</h3>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-indigo-400">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Diterima Bersih</p>
+                        <h3 class="text-2xl font-black text-sky-400 mt-1" id="honor-sum-bersih">Rp 0</h3>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900/90 text-slate-300 font-bold uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3.5 text-center w-12">No</th>
+                                    <th class="p-3.5">Kategori Honorarium</th>
+                                    <th class="p-3.5 text-center">Penerima</th>
+                                    <th class="p-3.5 text-right">Total Kotor (Rp)</th>
+                                    <th class="p-3.5 text-right">Potongan (Rp)</th>
+                                    <th class="p-3.5 text-right">Total Bersih (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="honor-summary-tbody" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+                            <tfoot id="honor-summary-tfoot" class="bg-slate-900/90 font-bold text-slate-200 border-t border-slate-800"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DYNAMIC TABLE VIEW CONTAINER -->
+            <div id="dynamic-table-container" class="tab-content hidden space-y-5">
+                <div class="flex justify-start">
+                    <button onclick="switchTab('beranda')" class="bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-lg">
+                        <i data-lucide="arrow-left" class="w-4 h-4 text-emerald-400"></i> Kembali ke Beranda
+                    </button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 id="table-title" class="text-xl font-black text-white tracking-wide">DAFTAR PEMBAYARAN</h2>
+                            <p id="table-subtitle" class="text-xs text-slate-400">Pemerintah Desa Pulias, Kec. Ogodeide</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <button onclick="openModalTambah()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg glow-emerald">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Tambah Penerima
+                            </button>
+                            <button onclick="triggerPrintTable()" class="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg glow-blue">
+                                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Legal (Portrait)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950/70 p-4 rounded-xl border border-slate-800/80">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">PERIODE SALUR :</label>
+                            <input type="text" id="periodeSalurInput" onchange="updatePeriodeSalur(this.value)" placeholder="Contoh: TRIWULAN I TAHUN 2026" class="w-full text-xs font-semibold px-3.5 py-2 bg-slate-900 border border-slate-700/80 rounded-xl text-white focus:outline-none focus:border-emerald-500 uppercase transition">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">TANGGAL DOKUMEN :</label>
+                            <input type="text" id="tanggalManualInput" onchange="updateTanggalManual(this.value)" placeholder="Contoh: 08 November 2026" class="w-full text-xs font-semibold px-3.5 py-2 bg-slate-900 border border-slate-700/80 rounded-xl text-white focus:outline-none focus:border-emerald-500 transition">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900/90 text-slate-300 font-bold uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3.5 text-center w-12">No</th>
+                                    <th class="p-3.5">Nama</th>
+                                    <th class="p-3.5">Jabatan</th>
+                                    <th class="p-3.5 text-center">Volume</th>
+                                    <th class="p-3.5 text-right">Jumlah (Rp)</th>
+                                    <th id="th-potongan" class="p-3.5 text-right">Potongan</th>
+                                    <th class="p-3.5 text-right">Jml Diterima (Rp)</th>
+                                    <th class="p-3.5 text-center w-36">Tanda Tangan</th>
+                                    <th class="p-3.5 text-center w-20 no-print">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+                            <tfoot id="table-foot" class="bg-slate-900/90 font-bold text-slate-200 border-t border-slate-800"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KUITANSI MANUAL SECTION -->
+            <div id="tab-kuitansi" class="tab-content hidden space-y-5">
+                <div class="flex justify-start">
+                    <button onclick="switchTab('beranda')" class="bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-lg">
+                        <i data-lucide="arrow-left" class="w-4 h-4 text-emerald-400"></i> Kembali ke Beranda
+                    </button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl space-y-5">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Formulir Kuitansi Pembayaran Manual</h2>
+                            <p class="text-xs text-slate-400">Pengisian cepat dokumen kuitansi dengan fitur Otomatis Terbilang Rupiah.</p>
+                        </div>
+                        <button onclick="triggerPrintKuitansi()" class="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-lg glow-blue">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Cetak Kuitansi
+                        </button>
+                    </div>
+                    <form id="formKuitansi" class="space-y-4 text-xs">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Tahun Anggaran:</label>
+                                <input type="text" id="k_tahun" value="2026" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white">
+                            </div>
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Kode Rekening / Sub Kegiatan:</label>
+                                <input type="text" id="k_rek" value="5.1.02.01" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white">
+                            </div>
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Telah Terima Dari:</label>
+                                <input type="text" id="k_dari" value="BENDAHARA DESA PULIAS" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-bold text-emerald-400">
+                            </div>
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Uang Sebesar (Rp):</label>
+                                <input type="number" id="k_jumlah" value="1500000" oninput="updateTerbilangKuitansi()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-bold text-emerald-400 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-semibold block text-slate-300 mb-1">Terbilang (Otomatis):</label>
+                            <input type="text" id="k_terbilang" value="Satu Juta Lima Ratus Ribu Rupiah" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 italic text-emerald-300 font-semibold" readonly>
+                        </div>
+                        <div>
+                            <label class="font-semibold block text-slate-300 mb-1">Untuk Pembayaran:</label>
+                            <textarea id="k_untuk" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white">Pembayaran Insentif / Honorarium Kegiatan Desa Pulias Periode Triwulan I Tahun 2026</textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-800 pt-4">
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Nama Penerima Uang:</label>
+                                <input type="text" id="k_penerima" value="AHMAD" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 font-bold text-white">
+                            </div>
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Tanggal Cair / Pencairan:</label>
+                                <input type="text" id="k_tanggal" value="08 November 2026" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- NOTA MANUAL SECTION -->
+            <div id="tab-nota" class="tab-content hidden space-y-5">
+                <div class="flex justify-start">
+                    <button onclick="switchTab('beranda')" class="bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition shadow-lg">
+                        <i data-lucide="arrow-left" class="w-4 h-4 text-emerald-400"></i> Kembali ke Beranda
+                    </button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl space-y-5">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Formulir Nota Penjualan Manual</h2>
+                            <p class="text-xs text-slate-400">Dokumen nota polos tanpa kop desa, item barang dinamis dapat ditambah & dihapus.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="tambahBarisNota()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Tambah Item
+                            </button>
+                            <button onclick="triggerPrintNota()" class="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg glow-blue">
+                                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Nota
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-xs">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Nomor Nota:</label>
+                                <input type="text" id="n_nomor" value="001/NOT/2026" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-bold">
+                            </div>
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Kepada (Tujuan / Penerima):</label>
+                                <input type="text" id="n_kepada" value="Pemdes Pulias" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white font-semibold">
+                            </div>
+                            <div>
+                                <label class="font-semibold block text-slate-300 mb-1">Tanggal Nota:</label>
+                                <input type="text" id="n_tanggal" value="08 November 2026" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white">
+                            </div>
+                        </div>
+
+                        <div class="border border-slate-800 rounded-2xl overflow-hidden">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-900/90 font-bold border-b border-slate-800 text-slate-300">
+                                    <tr>
+                                        <th class="p-3 w-24 text-center">BANYAKNYA</th>
+                                        <th class="p-3">NAMA BARANG</th>
+                                        <th class="p-3 text-right w-36">HARGA (Rp)</th>
+                                        <th class="p-3 text-right w-36">JUMLAH (Rp)</th>
+                                        <th class="p-3 text-center w-12 no-print">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nota-items-body" class="divide-y divide-slate-800/60"></tbody>
+                                <tfoot class="bg-slate-900/90 font-bold border-t border-slate-800">
+                                    <tr>
+                                        <td colspan="3" class="p-3 text-right uppercase text-slate-300">Jumlah Total Rp.</td>
+                                        <td id="nota-total-val" class="p-3 text-right text-emerald-400 text-sm font-extrabold">0</td>
+                                        <td class="no-print"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL EDIT / TAMBAH DATA (NO PRINT) -->
+    <div id="modalForm" class="no-print fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-card rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5 border border-slate-700">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 id="modal-title" class="font-bold text-white text-base">Tambah Data Penerima</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="dataForm" onsubmit="saveDataPenerima(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="edit-index">
+                <div>
+                    <label class="font-semibold block text-slate-300 mb-1">Nama Lengkap:</label>
+                    <input type="text" id="m_nama" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="font-semibold block text-slate-300 mb-1">Jabatan:</label>
+                    <input type="text" id="m_jabatan" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="font-semibold block text-slate-300 mb-1">Volume / Waktu:</label>
+                        <input type="text" id="m_volume" value="1 OB" oninput="previewKalkulasi()" onchange="previewKalkulasi()" required placeholder="Contoh: 3 OB, 2 Bulan" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="font-semibold block text-slate-300 mb-1">Nominal Satuan (Rp):</label>
+                        <input type="number" id="m_jumlah" oninput="previewKalkulasi()" onchange="previewKalkulasi()" required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+                <div id="m_potongan_container">
+                    <label class="font-semibold block text-slate-300 mb-1" id="m_potongan_label">Potongan Custom (Rp):</label>
+                    <input type="number" id="m_potongan" value="0" oninput="previewKalkulasi()" onchange="previewKalkulasi()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    <p class="text-[10px] text-slate-400 mt-1">* Isi 0 untuk potongan kalkulasi otomatis (5% PPh21 / 1% BPJS).</p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800 p-3.5 rounded-xl space-y-1.5">
+                    <div class="flex justify-between text-slate-400">
+                        <span>Estimasi Total Kotor:</span>
+                        <span id="prev-kotor" class="font-bold text-slate-200">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span>Estimasi Potongan:</span>
+                        <span id="prev-pot" class="font-bold text-rose-400">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-slate-200 font-bold border-t border-slate-800 pt-1.5">
+                        <span>Estimasi Diterima Bersih:</span>
+                        <span id="prev-bersih" class="text-emerald-400 text-sm">Rp 0</span>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 border-t border-slate-800 pt-4">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition">Batal</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition glow-emerald">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PRINT OUT TEMPLATE (CETAK DOKUMEN RESMI) -->
+    <div class="print-only p-4">
+        <div id="print-header" class="text-center border-b-4 border-double border-black pb-3 mb-4">
+            <h3 class="font-bold text-base tracking-wide uppercase">PEMERINTAH KABUPATEN TOLI-TOLI</h3>
+            <h3 class="font-bold text-lg tracking-wide uppercase">KECAMATAN OGODEIDE</h3>
+            <h2 class="font-extrabold text-xl tracking-wider uppercase">KANTOR DESA PULIAS</h2>
+            <p class="text-xs italic">Alamat: Jl. Poros Desa Pulias, Kec. Ogodeide, Kab. Tolitoli - Sulawesi Tengah</p>
+        </div>
+        <div class="text-center mb-4">
+            <h3 id="print-doc-title" class="font-bold text-md uppercase underline">DAFTAR PEMBAYARAN SILTAP & TUNJANGAN</h3>
+            <p id="print-doc-periode" class="text-xs font-semibold uppercase mt-0.5">PERIODE SALUR : TRIWULAN I TAHUN 2026</p>
+        </div>
+        <div id="print-table-area"></div>
+        <div id="print-signature-area" class="mt-8 text-xs">
+            <div class="flex justify-end text-center">
+                <div style="width: 250px;">
+                    <p id="print-titi-mangsa" class="mb-1">Pulias, 08 November 2026</p>
+                    <p class="font-bold">BENDAHARA DESA</p>
+                    <div class="h-16"></div>
+                    <p class="font-bold underline">ARMAWATI</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        let currentTab = 'beranda';
+        let periodeSalur = "TRIWULAN I TAHUN 2026";
+        let tanggalManual = "08 November 2026";
+
+        // STATE BARANG NOTA DINAMIS
+        let notaItems = [
+            { nama: "Kertas HVS A4 70gr", qty: 5, harga: 60000 },
+            { nama: "Tinta Printer Epson Hitam", qty: 2, harga: 110000 }
+        ];
+
+        const defaultDatabase = {
+            siltap_kades: [{ nama: "ALIYAS", jabatan: "Kepala Desa", volume: "1 Bulan", jumlah: 3000000, pot: 0 }],
+            siltap_aparat: Array.from({ length: 13 }, (_, i) => ({
+                nama: `Aparat Desa ${i + 1}`,
+                jabatan: i === 0 ? "Sekretaris Desa" : (i === 1 ? "Kaur Keuangan" : `Kasi/Kaur/Kadus ${i + 1}`),
+                volume: "1 Bulan", jumlah: i === 0 ? 2250000 : 2022000, pot: 0
+            })),
+            tunj_kades: [{ nama: "ALIYAS", jabatan: "Kepala Desa", volume: "1 Bulan", jumlah: 500000, pot: 0 }],
+            tunj_aparat: Array.from({ length: 13 }, (_, i) => ({
+                nama: `Aparat Desa ${i + 1}`, jabatan: i === 0 ? "Sekretaris Desa" : `Perangkat Desa ${i + 1}`,
+                volume: "1 Bulan", jumlah: 250000, pot: 0
+            })),
+            tunj_bpd: Array.from({ length: 7 }, (_, i) => ({
+                nama: `Anggota BPD ${i + 1}`, jabatan: i === 0 ? "Ketua BPD" : (i === 1 ? "Wakil Ketua BPD" : "Anggota BPD"),
+                volume: "1 Bulan", jumlah: i === 0 ? 1000000 : 700000, pot: 0
+            })),
+            insentif_rt: Array.from({ length: 10 }, (_, i) => ({
+                nama: `Ketua RT 0${i + 1}`, jabatan: `Ketua RT 0${i + 1}`, volume: "1 Bulan", jumlah: 500000, pot: 0
+            })),
+            hon_ppkd: Array.from({ length: 6 }, (_, i) => ({ nama: `Tim PPKD ${i + 1}`, jabatan: i === 0 ? "Ketua PPKD" : "Anggota PPKD", volume: "1 Kegiatan", jumlah: 750000, pot: 0 })),
+            hon_staf: Array.from({ length: 2 }, (_, i) => ({ nama: `Staf Desa ${i + 1}`, jabatan: "Staf Administrasi", volume: "1 Bulan", jumlah: 1000000, pot: 0 })),
+            hon_operator: Array.from({ length: 4 }, (_, i) => ({ nama: `Operator ${i + 1}`, jabatan: "Operator Siskeudes / Profil", volume: "1 Bulan", jumlah: 850000, pot: 0 })),
+            hon_karang_taruna: Array.from({ length: 6 }, (_, i) => ({ nama: `Pengurus Karang Taruna ${i + 1}`, jabatan: "Pengurus Karang Taruna", volume: "1 Kegiatan", jumlah: 300000, pot: 0 })),
+            hon_posyandu: Array.from({ length: 16 }, (_, i) => ({ nama: `Kader Posyandu ${i + 1}`, jabatan: "Kader Posyandu", volume: "1 Bulan", jumlah: 400000, pot: 0 })),
+            hon_posbindu: Array.from({ length: 6 }, (_, i) => ({ nama: `Kader Posbindu ${i + 1}`, jabatan: "Kader Posbindu", volume: "1 Bulan", jumlah: 350000, pot: 0 })),
+            hon_lpmd: Array.from({ length: 6 }, (_, i) => ({ nama: `Anggota LPMD ${i + 1}`, jabatan: "Pengurus LPMD", volume: "1 Bulan", jumlah: 400000, pot: 0 })),
+            hon_linmas: Array.from({ length: 16 }, (_, i) => ({ nama: `Anggota LINMAS ${i + 1}`, jabatan: "Anggota Satlinmas", volume: "1 Bulan", jumlah: 300000, pot: 0 })),
+            hon_mesjid: Array.from({ length: 19 }, (_, i) => ({ nama: `Pengurus Mesjid ${i + 1}`, jabatan: i === 0 ? "Imam Mesjid" : "Pegawai Syara / Pengurus", volume: "1 Bulan", jumlah: 500000, pot: 0 })),
+            hon_mengaji: Array.from({ length: 8 }, (_, i) => ({ nama: `Guru Mengaji ${i + 1}`, jabatan: "Guru Mengaji TPA", volume: "1 Bulan", jumlah: 450000, pot: 0 })),
+            hon_paud: Array.from({ length: 6 }, (_, i) => ({ nama: `Guru PAUD ${i + 1}`, jabatan: "Tutor PAUD Desa", volume: "1 Bulan", jumlah: 500000, pot: 0 })),
+            hon_tpps: Array.from({ length: 6 }, (_, i) => ({ nama: `Tim TPPS ${i + 1}`, jabatan: "Tim Stunting (TPPS)", volume: "1 Bulan", jumlah: 350000, pot: 0 })),
+            hon_kpm: Array.from({ length: 2 }, (_, i) => ({ nama: `Kader KPM ${i + 1}`, jabatan: "Kader Pembangunan Manusia", volume: "1 Bulan", jumlah: 500000, pot: 0 })),
+            hon_gereja: Array.from({ length: 5 }, (_, i) => ({ nama: `Pengurus Gereja ${i + 1}`, jabatan: "Pengelas / Pengurus Gereja", volume: "1 Bulan", jumlah: 400000, pot: 0 })),
+            hon_jenazah: Array.from({ length: 4 }, (_, i) => ({ nama: `Pengurus Jenazah ${i + 1}`, jabatan: "Petugas Pemulasaran Jenazah", volume: "1 Kegiatan", jumlah: 400000, pot: 0 })),
+            hon_blt: Array.from({ length: 24 }, (_, i) => ({ nama: `KPM BLT ${i + 1}`, jabatan: "Penerima Manfaat BLT", volume: "1 Bulan", jumlah: 300000, pot: 0 })),
+            hon_pkk: Array.from({ length: 8 }, (_, i) => ({ nama: `Pengurus PKK ${i + 1}`, jabatan: "TP-PKK Desa", volume: "1 Bulan", jumlah: 350000, pot: 0 }))
+        };
+
+        let database = JSON.parse(localStorage.getItem('SIMKEU_PULIAS_3D_DB')) || defaultDatabase;
+        periodeSalur = localStorage.getItem('SIMKEU_PERIODE') || "TRIWULAN I TAHUN 2026";
+        tanggalManual = localStorage.getItem('SIMKEU_TANGGAL') || "08 November 2026";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            document.getElementById('currentDateStr').innerText = tanggalManual;
+            document.getElementById('periodeSalurInput').value = periodeSalur;
+            document.getElementById('tanggalManualInput').value = tanggalManual;
+            document.getElementById('sidebarToggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            });
+            renderNotaItems();
+            updateTerbilangKuitansi();
+        });
+
+        function saveDB() { localStorage.setItem('SIMKEU_PULIAS_3D_DB', JSON.stringify(database)); }
+        
+        function resetDataDefault() {
+            if (confirm("Apakah Anda yakin ingin mengembalikan seluruh data ke setelan awal Desa Pulias?")) {
+                database = JSON.parse(JSON.stringify(defaultDatabase));
+                saveDB();
+                if (currentTab === 'rekap_siltap') renderRekapSiltap();
+                else if (currentTab === 'rekap_honor') renderRekapHonor();
+                else if (currentTab !== 'beranda' && currentTab !== 'kuitansi' && currentTab !== 'nota') renderTable(currentTab);
+            }
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-500/20', 'text-emerald-400', 'border', 'border-emerald-500/30');
+                btn.classList.add('text-slate-400');
+            });
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-emerald-500/20', 'text-emerald-400');
+                activeNav.classList.remove('text-slate-400');
+            }
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+            if (tabId === 'beranda') {
+                document.getElementById('tab-beranda').classList.remove('hidden');
+            } else if (tabId === 'rekap_siltap') {
+                document.getElementById('tab-rekap_siltap').classList.remove('hidden');
+                renderRekapSiltap();
+            } else if (tabId === 'rekap_honor') {
+                document.getElementById('tab-rekap_honor').classList.remove('hidden');
+                renderRekapHonor();
+            } else if (tabId === 'kuitansi') {
+                document.getElementById('tab-kuitansi').classList.remove('hidden');
+                updateTerbilangKuitansi();
+            } else if (tabId === 'nota') {
+                document.getElementById('tab-nota').classList.remove('hidden');
+                renderNotaItems();
+            } else {
+                document.getElementById('dynamic-table-container').classList.remove('hidden');
+                renderTable(tabId);
+            }
+        }
+
+        function toggleSubMenu(menuId) {
+            document.getElementById(menuId).classList.toggle('hidden');
+        }
+
+        function updatePeriodeSalur(val) { periodeSalur = val; localStorage.setItem('SIMKEU_PERIODE', val); }
+        function updateTanggalManual(val) {
+            tanggalManual = val;
+            localStorage.setItem('SIMKEU_TANGGAL', val);
+            document.getElementById('currentDateStr').innerText = val;
+            document.getElementById('print-titi-mangsa').innerText = `Pulias, ${val}`;
+        }
+
+        function formatRp(num) { return new Intl.NumberFormat('id-ID').format(num); }
+
+        // PARSER VOLUME OTOMATIS (Mendukung: 3 OB, 3 Bulan, 2 Kegiatan, 5 Orang, dll.)
+        function parseVolumeFactor(volStr) {
+            if (!volStr) return 1;
+            const match = volStr.toString().match(/\d+(\.\d+)?/);
+            return match ? parseFloat(match[0]) : 1;
+        }
+
+        // KONVERSI TERBILANG OTOMATIS
+        function angkaKeTerbilang(nilai) {
+            nilai = Math.abs(Math.floor(nilai));
+            const huruf = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+            let temp = "";
+
+            if (nilai < 12) {
+                temp = " " + huruf[nilai];
+            } else if (nilai < 20) {
+                temp = angkaKeTerbilang(nilai - 10) + " Belas";
+            } else if (nilai < 100) {
+                temp = angkaKeTerbilang(Math.floor(nilai / 10)) + " Puluh" + angkaKeTerbilang(nilai % 10);
+            } else if (nilai < 200) {
+                temp = " Seratus" + angkaKeTerbilang(nilai - 100);
+            } else if (nilai < 1000) {
+                temp = angkaKeTerbilang(Math.floor(nilai / 100)) + " Ratus" + angkaKeTerbilang(nilai % 100);
+            } else if (nilai < 2000) {
+                temp = " Seribu" + angkaKeTerbilang(nilai - 1000);
+            } else if (nilai < 1000000) {
+                temp = angkaKeTerbilang(Math.floor(nilai / 1000)) + " Ribu" + angkaKeTerbilang(nilai % 1000);
+            } else if (nilai < 1000000000) {
+                temp = angkaKeTerbilang(Math.floor(nilai / 1000000)) + " Juta" + angkaKeTerbilang(nilai % 1000000);
+            } else if (nilai < 1000000000000) {
+                temp = angkaKeTerbilang(Math.floor(nilai / 1000000000)) + " Milyar" + angkaKeTerbilang(nilai % 1000000000);
+            }
+            return temp;
+        }
+
+        function updateTerbilangKuitansi() {
+            const jml = parseFloat(document.getElementById('k_jumlah').value) || 0;
+            if (jml === 0) {
+                document.getElementById('k_terbilang').value = "Nol Rupiah";
+            } else {
+                const hasil = angkaKeTerbilang(jml).trim() + " Rupiah";
+                document.getElementById('k_terbilang').value = hasil;
+            }
+        }
+
+        function getTabMeta(tabId) {
+            const titles = {
+                siltap_kades: { title: "SILTAP KEPALA DESA", potLabel: "Pot. BPJS (1%)" },
+                siltap_aparat: { title: "SILTAP APARAT DESA", potLabel: "Pot. BPJS (1%)" },
+                tunj_kades: { title: "TUNJANGAN KEPALA DESA", potLabel: "-" },
+                tunj_aparat: { title: "TUNJANGAN APARAT DESA", potLabel: "-" },
+                tunj_bpd: { title: "TUNJANGAN ANGGOTA BPD", potLabel: "-" },
+                insentif_rt: { title: "INSENTIF KETUA RT", potLabel: "PPh 21 (5%)" },
+                hon_ppkd: { title: "HONORARIUM PPKD", potLabel: "PPh 21 (5%)" },
+                hon_staf: { title: "HONORARIUM STAF DESA", potLabel: "PPh 21 (5%)" },
+                hon_operator: { title: "HONORARIUM OPERATOR DESA", potLabel: "PPh 21 (5%)" },
+                hon_karang_taruna: { title: "HONORARIUM KARANG TARUNA", potLabel: "PPh 21 (5%)" },
+                hon_posyandu: { title: "HONORARIUM KADER POSYANDU", potLabel: "PPh 21 (5%)" },
+                hon_posbindu: { title: "HONORARIUM KADER POSBINDU", potLabel: "PPh 21 (5%)" },
+                hon_lpmd: { title: "HONORARIUM PENGURUS LPMD", potLabel: "PPh 21 (5%)" },
+                hon_linmas: { title: "HONORARIUM ANGGOTA LINMAS", potLabel: "PPh 21 (5%)" },
+                hon_mesjid: { title: "HONORARIUM PENGURUS MESJID", potLabel: "PPh 21 (5%)" },
+                hon_mengaji: { title: "HONORARIUM GURU MENGAJI", potLabel: "PPh 21 (5%)" },
+                hon_paud: { title: "HONORARIUM GURU PAUD", potLabel: "PPh 21 (5%)" },
+                hon_tpps: { title: "HONORARIUM TIM TPPS (STUNTING)", potLabel: "PPh 21 (5%)" },
+                hon_kpm: { title: "HONORARIUM KADER KPM", potLabel: "PPh 21 (5%)" },
+                hon_gereja: { title: "HONORARIUM PENGURUS GEREJA", potLabel: "PPh 21 (5%)" },
+                hon_jenazah: { title: "HONORARIUM PENGURUS JENAZAH", potLabel: "PPh 21 (5%)" },
+                hon_blt: { title: "BANTUAN LANGSUNG TUNAI (BLT DESA)", potLabel: "-" },
+                hon_pkk: { title: "HONORARIUM TP-PKK DESA", potLabel: "PPh 21 (5%)" }
+            };
+            return titles[tabId] || { title: "DAFTAR PEMBAYARAN", potLabel: "Potongan" };
+        }
+
+        function calcPotongan(tabId, jumlah, customPot = 0) {
+            if (customPot > 0) return customPot;
+            if (tabId.startsWith('hon_') && tabId !== 'hon_blt') return Math.round(jumlah * 0.05);
+            if (tabId === 'insentif_rt') return Math.round(jumlah * 0.05);
+            if (tabId.startsWith('siltap_')) return Math.round(jumlah * 0.01);
+            return 0;
+        }
+
+        function renderRekapSiltap() {
+            const keys = ['siltap_kades', 'siltap_aparat', 'tunj_kades', 'tunj_aparat', 'tunj_bpd', 'insentif_rt'];
+            const tbody = document.getElementById('siltap-summary-tbody');
+            const tfoot = document.getElementById('siltap-summary-tfoot');
+            tbody.innerHTML = '';
+            let gKotor = 0, gPot = 0, gBersih = 0, no = 1;
+
+            keys.forEach(key => {
+                const rows = database[key] || [];
+                const meta = getTabMeta(key);
+                let subKotor = 0, subPot = 0, subBersih = 0;
+                rows.forEach(r => {
+                    const factor = parseVolumeFactor(r.volume);
+                    const totalKotor = r.jumlah * factor;
+                    const pot = calcPotongan(key, totalKotor, r.pot);
+                    subKotor += totalKotor;
+                    subPot += pot;
+                    subBersih += (totalKotor - pot);
+                });
+                gKotor += subKotor; gPot += subPot; gBersih += subBersih;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 border-b border-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="p-3.5 text-center font-medium text-slate-400">${no++}</td>
+                    <td class="p-3.5 font-bold text-white">${meta.title}</td>
+                    <td class="p-3.5 text-center text-slate-300">${rows.length} Orang</td>
+                    <td class="p-3.5 text-right font-medium text-slate-200">Rp ${formatRp(subKotor)}</td>
+                    <td class="p-3.5 text-right font-semibold text-rose-400">Rp ${formatRp(subPot)}</td>
+                    <td class="p-3.5 text-right font-bold text-emerald-400">Rp ${formatRp(subBersih)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('siltap-sum-kotor').innerText = `Rp ${formatRp(gKotor)}`;
+            document.getElementById('siltap-sum-pot').innerText = `Rp ${formatRp(gPot)}`;
+            document.getElementById('siltap-sum-bersih').innerText = `Rp ${formatRp(gBersih)}`;
+
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="3" class="p-3.5 text-right uppercase font-bold text-slate-300">TOTAL SILTAP & TUNJANGAN:</td>
+                    <td class="p-3.5 text-right font-black text-white">Rp ${formatRp(gKotor)}</td>
+                    <td class="p-3.5 text-right font-black text-rose-400">Rp ${formatRp(gPot)}</td>
+                    <td class="p-3.5 text-right font-black text-emerald-400">Rp ${formatRp(gBersih)}</td>
+                </tr>
+            `;
+        }
+
+        function renderRekapHonor() {
+            const keys = Object.keys(database).filter(k => k.startsWith('hon_'));
+            const tbody = document.getElementById('honor-summary-tbody');
+            const tfoot = document.getElementById('honor-summary-tfoot');
+            tbody.innerHTML = '';
+            let gKotor = 0, gPot = 0, gBersih = 0, no = 1;
+
+            keys.forEach(key => {
+                const rows = database[key] || [];
+                const meta = getTabMeta(key);
+                let subKotor = 0, subPot = 0, subBersih = 0;
+                rows.forEach(r => {
+                    const factor = parseVolumeFactor(r.volume);
+                    const totalKotor = r.jumlah * factor;
+                    const pot = calcPotongan(key, totalKotor, r.pot);
+                    subKotor += totalKotor;
+                    subPot += pot;
+                    subBersih += (totalKotor - pot);
+                });
+                gKotor += subKotor; gPot += subPot; gBersih += subBersih;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 border-b border-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="p-3.5 text-center font-medium text-slate-400">${no++}</td>
+                    <td class="p-3.5 font-bold text-white">${meta.title}</td>
+                    <td class="p-3.5 text-center text-slate-300">${rows.length} Orang</td>
+                    <td class="p-3.5 text-right font-medium text-slate-200">Rp ${formatRp(subKotor)}</td>
+                    <td class="p-3.5 text-right font-semibold text-rose-400">Rp ${formatRp(subPot)}</td>
+                    <td class="p-3.5 text-right font-bold text-sky-400">Rp ${formatRp(subBersih)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('honor-sum-kotor').innerText = `Rp ${formatRp(gKotor)}`;
+            document.getElementById('honor-sum-pot').innerText = `Rp ${formatRp(gPot)}`;
+            document.getElementById('honor-sum-bersih').innerText = `Rp ${formatRp(gBersih)}`;
+
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="3" class="p-3.5 text-right uppercase font-bold text-slate-300">TOTAL HONORARIUM:</td>
+                    <td class="p-3.5 text-right font-black text-white">Rp ${formatRp(gKotor)}</td>
+                    <td class="p-3.5 text-right font-black text-rose-400">Rp ${formatRp(gPot)}</td>
+                    <td class="p-3.5 text-right font-black text-sky-400">Rp ${formatRp(gBersih)}</td>
+                </tr>
+            `;
+        }
+
+        function triggerPrintRekapSiltap() {
+            document.getElementById('print-doc-title').innerText = "REKAPITULASI REALISASI DANA SILTAP & TUNJANGAN";
+            document.getElementById('print-doc-periode').innerText = `PERIODE SALUR : ${periodeSalur.toUpperCase()}`;
+            document.getElementById('print-titi-mangsa').innerText = `Pulias, ${tanggalManual}`;
+            document.getElementById('print-header').style.display = 'block';
+            document.getElementById('print-signature-area').style.display = 'block';
+
+            const keys = ['siltap_kades', 'siltap_aparat', 'tunj_kades', 'tunj_aparat', 'tunj_bpd', 'insentif_rt'];
+            let gKotor = 0, gPot = 0, gBersih = 0, no = 1;
+
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 30px; text-align: center;">NO</th>
+                            <th style="text-align: left;">KATEGORI PEMBAYARAN SILTAP & TUNJANGAN</th>
+                            <th style="text-align: center;">JUMLAH PENERIMA</th>
+                            <th style="text-align: right;">TOTAL KOTOR (RP)</th>
+                            <th style="text-align: right;">TOTAL POTONGAN (RP)</th>
+                            <th style="text-align: right;">TOTAL BERSIH (RP)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            keys.forEach(key => {
+                const rows = database[key] || [];
+                const meta = getTabMeta(key);
+                let subKotor = 0, subPot = 0, subBersih = 0;
+                rows.forEach(r => {
+                    const factor = parseVolumeFactor(r.volume);
+                    const totalKotor = r.jumlah * factor;
+                    const pot = calcPotongan(key, totalKotor, r.pot);
+                    subKotor += totalKotor;
+                    subPot += pot;
+                    subBersih += (totalKotor - pot);
+                });
+                gKotor += subKotor; gPot += subPot; gBersih += subBersih;
+
+                tableHTML += `
+                    <tr>
+                        <td style="text-align: center;">${no++}</td>
+                        <td><b>${meta.title}</b></td>
+                        <td style="text-align: center;">${rows.length} Orang</td>
+                        <td style="text-align: right;">${formatRp(subKotor)}</td>
+                        <td style="text-align: right;">${subPot > 0 ? formatRp(subPot) : '-'}</td>
+                        <td style="text-align: right;"><b>${formatRp(subBersih)}</b></td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight: bold; background-color: #f9fafb;">
+                            <td colspan="3" style="text-align: right;">TOTAL SILTAP & TUNJANGAN:</td>
+                            <td style="text-align: right;">${formatRp(gKotor)}</td>
+                            <td style="text-align: right;">${formatRp(gPot)}</td>
+                            <td style="text-align: right;">${formatRp(gBersih)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+
+            document.getElementById('print-table-area').innerHTML = tableHTML;
+            window.print();
+        }
+
+        function triggerPrintRekapHonor() {
+            document.getElementById('print-doc-title').innerText = "REKAPITULASI REALISASI DANA HONORARIUM";
+            document.getElementById('print-doc-periode').innerText = `PERIODE SALUR : ${periodeSalur.toUpperCase()}`;
+            document.getElementById('print-titi-mangsa').innerText = `Pulias, ${tanggalManual}`;
+            document.getElementById('print-header').style.display = 'block';
+            document.getElementById('print-signature-area').style.display = 'block';
+
+            const keys = Object.keys(database).filter(k => k.startsWith('hon_'));
+            let gKotor = 0, gPot = 0, gBersih = 0, no = 1;
+
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 30px; text-align: center;">NO</th>
+                            <th style="text-align: left;">KATEGORI HONORARIUM KEGIATAN</th>
+                            <th style="text-align: center;">JUMLAH PENERIMA</th>
+                            <th style="text-align: right;">TOTAL KOTOR (RP)</th>
+                            <th style="text-align: right;">PPh 21 (5%) (RP)</th>
+                            <th style="text-align: right;">TOTAL BERSIH (RP)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            keys.forEach(key => {
+                const rows = database[key] || [];
+                const meta = getTabMeta(key);
+                let subKotor = 0, subPot = 0, subBersih = 0;
+                rows.forEach(r => {
+                    const factor = parseVolumeFactor(r.volume);
+                    const totalKotor = r.jumlah * factor;
+                    const pot = calcPotongan(key, totalKotor, r.pot);
+                    subKotor += totalKotor;
+                    subPot += pot;
+                    subBersih += (totalKotor - pot);
+                });
+                gKotor += subKotor; gPot += subPot; gBersih += subBersih;
+
+                tableHTML += `
+                    <tr>
+                        <td style="text-align: center;">${no++}</td>
+                        <td><b>${meta.title}</b></td>
+                        <td style="text-align: center;">${rows.length} Orang</td>
+                        <td style="text-align: right;">${formatRp(subKotor)}</td>
+                        <td style="text-align: right;">${subPot > 0 ? formatRp(subPot) : '-'}</td>
+                        <td style="text-align: right;"><b>${formatRp(subBersih)}</b></td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight: bold; background-color: #f9fafb;">
+                            <td colspan="3" style="text-align: right;">TOTAL HONORARIUM:</td>
+                            <td style="text-align: right;">${formatRp(gKotor)}</td>
+                            <td style="text-align: right;">${formatRp(gPot)}</td>
+                            <td style="text-align: right;">${formatRp(gBersih)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+
+            document.getElementById('print-table-area').innerHTML = tableHTML;
+            window.print();
+        }
+
+        function renderTable(tabId) {
+            const meta = getTabMeta(tabId);
+            document.getElementById('table-title').innerText = meta.title;
+            document.getElementById('th-potongan').innerText = meta.potLabel;
+
+            const rows = database[tabId] || [];
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            let totalKotor = 0, totalPot = 0, totalBersih = 0;
+
+            rows.forEach((row, idx) => {
+                const factor = parseVolumeFactor(row.volume);
+                const jumlahKotorTotal = row.jumlah * factor;
+                const pot = calcPotongan(tabId, jumlahKotorTotal, row.pot);
+                const bersih = jumlahKotorTotal - pot;
+                const noUrut = idx + 1;
+                totalKotor += jumlahKotorTotal; totalPot += pot; totalBersih += bersih;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 border-b border-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="p-3.5 text-center font-medium text-slate-400">${noUrut}</td>
+                    <td class="p-3.5 font-bold text-white">${row.nama}</td>
+                    <td class="p-3.5 text-slate-300">${row.jabatan}</td>
+                    <td class="p-3.5 text-center text-slate-300 font-semibold">${row.volume}</td>
+                    <td class="p-3.5 text-right font-medium text-slate-200">${formatRp(jumlahKotorTotal)}</td>
+                    <td class="p-3.5 text-right text-rose-400 font-semibold">${pot > 0 ? formatRp(pot) : '-'}</td>
+                    <td class="p-3.5 text-right font-bold text-emerald-400">${formatRp(bersih)}</td>
+                    <td class="p-3.5 text-slate-500 font-medium">${noUrut % 2 !== 0 ? noUrut + '. ..........' : '<div class="text-right">' + noUrut + '. ..........</div>'}</td>
+                    <td class="p-3.5 text-center space-x-1 no-print">
+                        <button onclick="openModalEdit(${idx})" class="p-1.5 text-sky-400 hover:bg-sky-500/20 rounded-lg transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button onclick="hapusRow(${idx})" class="p-1.5 text-rose-400 hover:bg-rose-500/20 rounded-lg transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('table-foot').innerHTML = `
+                <tr>
+                    <td colspan="4" class="p-3.5 text-right uppercase font-bold text-slate-300">JUMLAH TOTAL:</td>
+                    <td class="p-3.5 text-right text-white font-black">${formatRp(totalKotor)}</td>
+                    <td class="p-3.5 text-right text-rose-400 font-black">${formatRp(totalPot)}</td>
+                    <td class="p-3.5 text-right text-emerald-400 font-black text-sm">${formatRp(totalBersih)}</td>
+                    <td colspan="2"></td>
+                </tr>
+            `;
+            lucide.createIcons();
+        }
+
+        function openModalTambah() {
+            document.getElementById('modal-title').innerText = "Tambah Data Penerima";
+            document.getElementById('edit-index').value = "-1";
+            document.getElementById('m_nama').value = "";
+            document.getElementById('m_jabatan').value = "";
+            document.getElementById('m_volume').value = "1 OB";
+            document.getElementById('m_jumlah').value = "500000";
+            document.getElementById('m_potongan').value = "0";
+            previewKalkulasi();
+            document.getElementById('modalForm').classList.remove('hidden');
+        }
+
+        function openModalEdit(idx) {
+            const row = database[currentTab][idx];
+            document.getElementById('modal-title').innerText = "Edit Data Penerima";
+            document.getElementById('edit-index').value = idx;
+            document.getElementById('m_nama').value = row.nama;
+            document.getElementById('m_jabatan').value = row.jabatan;
+            document.getElementById('m_volume').value = row.volume;
+            document.getElementById('m_jumlah').value = row.jumlah;
+            document.getElementById('m_potongan').value = row.pot || 0;
+            previewKalkulasi();
+            document.getElementById('modalForm').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('modalForm').classList.add('hidden'); }
+
+        function previewKalkulasi() {
+            const volStr = document.getElementById('m_volume').value;
+            const factor = parseVolumeFactor(volStr);
+            const nominalSatuan = parseFloat(document.getElementById('m_jumlah').value) || 0;
+            const totalKotor = nominalSatuan * factor;
+            
+            const customPot = parseFloat(document.getElementById('m_potongan').value) || 0;
+            const pot = calcPotongan(currentTab, totalKotor, customPot);
+            const bersih = totalKotor - pot;
+
+            document.getElementById('prev-kotor').innerText = `Rp ${formatRp(totalKotor)}`;
+            document.getElementById('prev-pot').innerText = `Rp ${formatRp(pot)}`;
+            document.getElementById('prev-bersih').innerText = `Rp ${formatRp(bersih)}`;
+        }
+
+        function saveDataPenerima(e) {
+            e.preventDefault();
+            const idx = parseInt(document.getElementById('edit-index').value);
+            const newData = {
+                nama: document.getElementById('m_nama').value,
+                jabatan: document.getElementById('m_jabatan').value,
+                volume: document.getElementById('m_volume').value,
+                jumlah: parseFloat(document.getElementById('m_jumlah').value) || 0,
+                pot: parseFloat(document.getElementById('m_potongan').value) || 0
+            };
+            if (idx === -1) database[currentTab].push(newData);
+            else database[currentTab][idx] = newData;
+
+            saveDB();
+            renderTable(currentTab);
+            closeModal();
+        }
+
+        function hapusRow(idx) {
+            if (confirm("Apakah Anda yakin ingin menghapus penerima ini?")) {
+                database[currentTab].splice(idx, 1);
+                saveDB();
+                renderTable(currentTab);
+            }
+        }
+
+        function triggerPrintTable() {
+            const meta = getTabMeta(currentTab);
+            document.getElementById('print-doc-title').innerText = meta.title;
+            document.getElementById('print-doc-periode').innerText = `PERIODE SALUR : ${periodeSalur.toUpperCase()}`;
+            document.getElementById('print-titi-mangsa').innerText = `Pulias, ${tanggalManual}`;
+            document.getElementById('print-header').style.display = 'block';
+            document.getElementById('print-signature-area').style.display = 'block';
+
+            const rows = database[currentTab] || [];
+            let totalKotor = 0, totalPot = 0, totalBersih = 0;
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 30px; text-align: center;">NO</th>
+                            <th style="text-align: left;">NAMA</th>
+                            <th style="text-align: left;">JABATAN</th>
+                            <th style="text-align: center;">VOL</th>
+                            <th style="text-align: right;">JUMLAH (RP)</th>
+                            <th style="text-align: right;">${meta.potLabel}</th>
+                            <th style="text-align: right;">JML DITERIMA (RP)</th>
+                            <th style="text-align: center; width: 160px;">TANDA TANGAN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            rows.forEach((row, idx) => {
+                const factor = parseVolumeFactor(row.volume);
+                const jumlahKotorTotal = row.jumlah * factor;
+                const pot = calcPotongan(currentTab, jumlahKotorTotal, row.pot);
+                const bersih = jumlahKotorTotal - pot;
+                const noUrut = idx + 1;
+                totalKotor += jumlahKotorTotal; totalPot += pot; totalBersih += bersih;
+                tableHTML += `
+                    <tr>
+                        <td style="text-align: center;">${noUrut}</td>
+                        <td><b>${row.nama}</b></td>
+                        <td>${row.jabatan}</td>
+                        <td style="text-align: center;">${row.volume}</td>
+                        <td style="text-align: right;">${formatRp(jumlahKotorTotal)}</td>
+                        <td style="text-align: right;">${pot > 0 ? formatRp(pot) : '-'}</td>
+                        <td style="text-align: right;"><b>${formatRp(bersih)}</b></td>
+                        <td style="height: 32px;">${noUrut % 2 !== 0 ? noUrut + '. .........' : '<div style="text-align: right;">' + noUrut + '. .........</div>'}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight: bold; background-color: #f9fafb;">
+                            <td colspan="4" style="text-align: right;">TOTAL:</td>
+                            <td style="text-align: right;">${formatRp(totalKotor)}</td>
+                            <td style="text-align: right;">${formatRp(totalPot)}</td>
+                            <td style="text-align: right;">${formatRp(totalBersih)}</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+            document.getElementById('print-table-area').innerHTML = tableHTML;
+            window.print();
+        }
+
+        // PRINT KUITANSI MANUAL
+        function triggerPrintKuitansi() {
+            const k_tahun = document.getElementById('k_tahun').value;
+            const k_rek = document.getElementById('k_rek').value;
+            const k_dari = document.getElementById('k_dari').value;
+            const k_jumlah = parseFloat(document.getElementById('k_jumlah').value) || 0;
+            const k_terbilang = document.getElementById('k_terbilang').value;
+            const k_untuk = document.getElementById('k_untuk').value;
+            const k_penerima = document.getElementById('k_penerima').value;
+            const k_tgl = document.getElementById('k_tanggal').value;
+
+            document.getElementById('print-header').style.display = 'none';
+            document.getElementById('print-doc-title').innerText = "KUITANSI PEMBAYARAN";
+            document.getElementById('print-doc-periode').innerText = `TAHUN ANGGARAN ${k_tahun} | NO REK: ${k_rek}`;
+            document.getElementById('print-signature-area').style.display = 'none';
+
+            const html = `
+                <div style="border: 2px solid #000; padding: 20px; margin-top: 10px; background-color: #fff;">
+                    <table style="border: none !important; width: 100%;">
+                        <tr style="border: none !important;"><td style="border: none !important; width: 150px; font-weight: bold; padding: 6px 0;">Telah Terima Dari</td><td style="border: none !important; padding: 6px 0;">: <b>${k_dari}</b></td></tr>
+                        <tr style="border: none !important;"><td style="border: none !important; font-weight: bold; padding: 6px 0;">Uang Sebesar</td><td style="border: none !important; font-size: 14pt; font-weight: bold; padding: 6px 0;">: Rp. ${formatRp(k_jumlah)}</td></tr>
+                        <tr style="border: none !important;"><td style="border: none !important; font-weight: bold; padding: 6px 0;">Terbilang</td><td style="border: none !important; font-style: italic; background: #f3f4f6; padding: 8px; border: 1px solid #ccc !important;">( ${k_terbilang} )</td></tr>
+                        <tr style="border: none !important;"><td style="border: none !important; font-weight: bold; vertical-align: top; padding: 6px 0;">Untuk Pembayaran</td><td style="border: none !important; vertical-align: top; padding: 6px 0;">: ${k_untuk}</td></tr>
+                    </table>
+                    <div style="margin-top: 40px; display: flex; justify-content: flex-end; text-align: center;">
+                        <div style="width: 250px;">
+                            <p>Pulias, ${k_tgl}</p>
+                            <p style="font-weight: bold; margin-top: 4px;">PENERIMA UANG</p>
+                            <br><br><br><br>
+                            <p style="font-weight: bold; text-decoration: underline;">${k_penerima}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('print-table-area').innerHTML = html;
+            window.print();
+        }
+
+        // NOTA ITEM FUNCTIONS
+        function renderNotaItems() {
+            const tbody = document.getElementById('nota-items-body');
+            tbody.innerHTML = '';
+            let totalBelanja = 0;
+
+            notaItems.forEach((item, idx) => {
+                const subTotal = (item.qty || 0) * (item.harga || 0);
+                totalBelanja += subTotal;
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-800/60";
+                tr.innerHTML = `
+                    <td class="p-2 text-center"><input type="number" value="${item.qty}" oninput="updateNotaItem(${idx}, 'qty', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-xs font-bold text-white"></td>
+                    <td class="p-2"><input type="text" value="${item.nama}" onchange="updateNotaItem(${idx}, 'nama', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white"></td>
+                    <td class="p-2 text-right"><input type="number" value="${item.harga}" oninput="updateNotaItem(${idx}, 'harga', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-right text-xs text-white"></td>
+                    <td class="p-2 text-right font-bold text-emerald-400">${formatRp(subTotal)}</td>
+                    <td class="p-2 text-center no-print">
+                        <button onclick="hapusBarisNota(${idx})" class="text-rose-400 hover:bg-rose-500/20 p-1.5 rounded-lg transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('nota-total-val').innerText = formatRp(totalBelanja);
+            lucide.createIcons();
+        }
+
+        function tambahBarisNota() {
+            notaItems.push({ nama: "", qty: 1, harga: 0 });
+            renderNotaItems();
+        }
+
+        function hapusBarisNota(idx) {
+            if (notaItems.length <= 1) return;
+            notaItems.splice(idx, 1);
+            renderNotaItems();
+        }
+
+        function updateNotaItem(idx, field, val) {
+            if (field === 'qty' || field === 'harga') {
+                notaItems[idx][field] = parseFloat(val) || 0;
+            } else {
+                notaItems[idx][field] = val;
+            }
+            renderNotaItems();
+        }
+
+        // PRINT NOTA MANUAL CETAK
+        function triggerPrintNota() {
+            const n_nomor = document.getElementById('n_nomor').value || '.........';
+            const n_kepada = document.getElementById('n_kepada').value || '...........................................';
+            const n_tgl = document.getElementById('n_tanggal').value || '....................';
+
+            document.getElementById('print-header').style.display = 'none';
+            document.getElementById('print-doc-title').innerText = "";
+            document.getElementById('print-doc-periode').innerText = "";
+            document.getElementById('print-signature-area').style.display = 'none';
+
+            let totalBelanja = 0;
+            let rowsHTML = '';
+
+            notaItems.forEach((item) => {
+                const subTotal = (item.qty || 0) * (item.harga || 0);
+                totalBelanja += subTotal;
+                rowsHTML += `
+                    <tr>
+                        <td style="text-align: center; padding: 6px;">${item.qty > 0 ? item.qty : ''}</td>
+                        <td style="padding: 6px;"><b>${item.nama}</b></td>
+                        <td style="text-align: right; padding: 6px;">${item.harga > 0 ? formatRp(item.harga) : ''}</td>
+                        <td style="text-align: right; padding: 6px;">${subTotal > 0 ? formatRp(subTotal) : ''}</td>
+                    </tr>
+                `;
+            });
+
+            const html = `
+                <div style="font-family: Arial, sans-serif; padding: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div>
+                            <h2 style="font-size: 16pt; font-weight: bold; margin: 0; text-decoration: underline;">NOTA NO. ${n_nomor}</h2>
+                        </div>
+                        <div style="width: 260px; font-size: 11pt;">
+                            <div style="display: flex; gap: 8px;">
+                                <span style="font-weight: bold;">Kepada</span>
+                                <div style="flex: 1; border-bottom: 1px dotted #000;">${n_kepada}</div>
+                            </div>
+                            <div style="border-bottom: 1px dotted #000; margin-top: 6px; height: 16px;"></div>
+                            <div style="border-bottom: 1px dotted #000; margin-top: 6px; height: 16px;"></div>
+                            <div style="text-align: right; margin-top: 6px;">
+                                <span style="border-bottom: 2px double #000; padding: 0 10px;">${n_tgl}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #000; text-transform: uppercase;">
+                                <th style="width: 100px; text-align: center; border-right: 1px solid #000; padding: 6px;">BANYAKNYA</th>
+                                <th style="text-align: center; border-right: 1px solid #000; padding: 6px;">NAMA BARANG</th>
+                                <th style="width: 130px; text-align: center; border-right: 1px solid #000; padding: 6px;">HARGA</th>
+                                <th style="width: 140px; text-align: center; padding: 6px;">JUMLAH</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHTML}
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 1px solid #000;">
+                                <td colspan="2" style="border-right: 1px solid #000;"></td>
+                                <td style="text-align: right; font-weight: bold; border-right: 1px solid #000; padding: 6px;">Jumlah Rp.</td>
+                                <td style="text-align: right; font-weight: bold; padding: 6px;">${formatRp(totalBelanja)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 40px; font-size: 11pt; text-align: center;">
+                        <div style="width: 200px;">
+                            <p style="margin-bottom: 60px;">Tanda Terima</p>
+                            <p style="border-bottom: 1px solid #000; width: 140px; margin: 0 auto;"></p>
+                        </div>
+                        <div style="width: 200px;">
+                            <p style="margin-bottom: 60px;">Hormat Kami,</p>
+                            <p style="border-bottom: 1px solid #000; width: 140px; margin: 0 auto;"></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('print-table-area').innerHTML = html;
+            window.print();
+        }
+    </script>
+</body>
+</html>
